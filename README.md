@@ -196,11 +196,11 @@ Greenhouse Device
 
 Example MQTT payload:
 
+```
 Topic : greenhouse/test
 Url : /api/v1/report/device-control
 Method : POST
 
-```
 {
   "device_id": 1,
   "switch_status": "OFF",
