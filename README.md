@@ -25,22 +25,22 @@ Client / IoT Device
 ```
 
 # Features
--> REST API built with Go and Echo
--> PostgreSQL database integration
--> MQTT broker integration using Eclipse Paho MQTT
--> Device control through MQTT
--> Device and device-report data models
--> Request validation
--> Centralized HTTP error handling
--> Request ID middleware
--> CORS support
--> Gzip response compression
--> Application logging
--> Panic recovery
--> Redis cache support
--> Configurable application host and port
--> MQTT connection status checking
--> Automatic MQTT reconnection
+1. REST API built with Go and Echo
+2. PostgreSQL database integration
+3. MQTT broker integration using Eclipse Paho MQTT
+4. Device control through MQTT
+5. Device and device-report data models
+6. Request validation
+7. Centralized HTTP error handling
+8. Request ID middleware
+9. CORS support
+10. Gzip response compression
+11. Application logging
+12. Panic recovery
+13. Redis cache support
+14. Configurable application host and port
+15. MQTT connection status checking
+16. Automatic MQTT reconnection
 
 # Tech Stack
 | Technology        | Purpose                          |
@@ -312,9 +312,9 @@ One device can have multiple reports over time.
 # Configuration
 The application reads its configuration through the project's configuration helper.
 Important configuration groups include:
--> app
--> broker
--> database.postgre
+1. app
+2. broker
+3. database.postgre
 
 # Example configuration values:
 ```
@@ -337,23 +337,22 @@ Sensitive credentials should not be committed to the repository.
 Requirements
 
 Make sure the following software is installed:
+1. Go
+2. PostgreSQL
+3. Mosquitto MQTT Broker
+4. Redis (optional, depending on cache configuration)
 
--> Go
--> PostgreSQL
--> Mosquitto MQTT Broker
--> Redis (optional, depending on cache configuration)
-
+Steps :
 1. Clone Repository
 2. Install Go Dependencies
 3. Configure PostgreSQL
 Create the required PostgreSQL database and configure the database connection according to the application's configuration.
 The application currently separates PostgreSQL connections into:
--> db_master
--> db_main_master
--> db_report_master
+1. db_master
+2. db_main_master
+3. db_report_master
 
 Here are the queries :
-
 ```
 CREATE TABLE device_identities (
     id BIGSERIAL PRIMARY KEY,
@@ -475,26 +474,24 @@ When a panic occurs, the application records the error and returns an HTTP 500 r
 The application provides application logging and panic logging.
 Logs are written to the application's logs directory.
 The application also includes request-related information when running in debug mode, including:
-
--> request_id
--> user_agent
--> remote
--> method
--> path
--> query
--> status
--> latency
+1. request_id
+2. user_agent
+3. remote
+4. method
+5. path
+6. query
+7. status
+8. latency
 
 # Middleware
 The HTTP server uses several Echo middlewares, including:
-
--> CORS
--> Request ID
--> Gzip
--> Body limit
--> Recovery
--> Custom recovery
--> Request logging in debug mode
+1. CORS
+2. Request ID
+3. Gzip
+4. Body limit
+5. Recovery
+6. Custom recovery
+7. Request logging in debug mode
 
 The default request body limit is configured to 200 MB.
 
@@ -571,29 +568,29 @@ This architecture is useful for IoT systems because devices can subscribe to top
 
 # Future Improvements
 The current implementation can be extended with:
--> MQTT topic subscription for incoming sensor data
--> Sensor data ingestion through MQTT
--> Device online/offline status tracking
--> MQTT Last Will and Testament (LWT)
--> Authentication and authorization
--> Database migrations
--> Automated unit and integration tests
--> Docker Compose for PostgreSQL, Mosquitto, Redis, and the API
--> API documentation using OpenAPI/Swagger
--> Graceful HTTP server shutdown
--> Health check for PostgreSQL and MQTT connection
--> Message retry or QoS strategy depending on device requirements
--> Structured observability using metrics and tracing
+1. MQTT topic subscription for incoming sensor data
+2. Sensor data ingestion through MQTT
+3. Device online/offline status tracking
+4. MQTT Last Will and Testament (LWT)
+5. Authentication and authorization
+6. Database migrations
+7. Automated unit and integration tests
+8. Docker Compose for PostgreSQL, Mosquitto, Redis, and the API
+9. API documentation using OpenAPI/Swagger
+10. Graceful HTTP server shutdown
+11. Health check for PostgreSQL and MQTT connection
+12. Message retry or QoS strategy depending on device requirements
+13. Structured observability using metrics and tracing
 
 # Project Status
 This project was developed as a backend engineering assignment for an IoT greenhouse system.
 The implementation focuses on:
--> Clean backend structure
--> REST API design
--> PostgreSQL integration
--> MQTT integration
--> Device control
--> Real-time communication concepts
--> Error handling
--> Logging
--> Maintainable code organization
+1. Clean backend structure
+2. REST API design
+3. PostgreSQL integration
+4. MQTT integration
+5. Device control
+6. Real-time communication concepts
+7. Error handling
+8. Logging
+9. Maintainable code organization
