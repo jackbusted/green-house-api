@@ -1,9 +1,7 @@
 # Greenhouse IoT Backend API
-
 Backend API for a greenhouse IoT system built with Go. This project provides REST APIs for device management and control, integrates with an MQTT broker for real-time device communication, and uses PostgreSQL for persistent data storage.
 
 # The system is designed around a simple IoT communication flow:
-
 ```
 Client / IoT Device
         |
@@ -58,6 +56,7 @@ Client / IoT Device
 | Zerolog           | Structured logging               |
 
 # Project Structure
+```
 green-house-api/
 │
 ├── api/
@@ -98,10 +97,9 @@ green-house-api/
 ├── main.go
 ├── go.mod
 └── README.md
-
+```
 
 # The application separates responsibilities into several layers:
-
 # Handler
 Responsible for receiving HTTP requests, binding request payloads, validating input, and returning HTTP responses.
 
@@ -121,6 +119,7 @@ Contains the application's data structures and database-related models.
 Registers and groups the application's HTTP endpoints.
 
 # The application follows a layered architecture:
+```
 HTTP Request
      |
      v
@@ -138,6 +137,7 @@ Repository   MQTT Client
    |             |
    v             v
 PostgreSQL    MQTT Broker
+```
 
 This separation keeps the HTTP layer, business logic, database access, and MQTT communication independent from each other.
 
@@ -146,6 +146,7 @@ MQTT is used for real-time communication between the backend and greenhouse devi
 The application uses Eclipse Paho MQTT as the MQTT client library.
 The MQTT connection is initialized once when the application starts.
 
+```
 Application Startup
        |
        v
@@ -162,6 +163,7 @@ Inject MQTT Client
        |
        v
 Start HTTP Server
+```
 
 The MQTT client is then reused by subsequent requests.
 This avoids creating a new MQTT connection for every API request.
@@ -169,6 +171,7 @@ When the application shuts down, the MQTT client is disconnected gracefully.
 The MQTT client also enables automatic reconnection when the broker connection is lost.
 
 # For a device control operation, the flow is:
+```
 Client
   |
   | POST device control request
@@ -189,6 +192,7 @@ MQTT Broker
   |
   v
 Greenhouse Device
+```
 
 Example MQTT payload:
 
@@ -214,13 +218,12 @@ This is suitable for the current assignment and simple real-time device control 
 For production systems, the QoS level should be selected based on the required reliability and device-control semantics.
 
 # The MQTT client is created during application startup:
-
 ```
 mqtt, err := mqttClient.NewClient(brokerUrl, brokerClientID)
 ```
 
 The client is then assigned to the application helper and passed through the router to the API layer.
-
+```
 main.go
    |
    v
@@ -234,6 +237,7 @@ Route
    |
    v
 Usecase
+```
 
 The MQTT client is not recreated for every request.
 This approach reduces connection overhead and allows the backend to maintain a persistent connection with the broker.
@@ -241,7 +245,7 @@ This approach reduces connection overhead and allows the backend to maintain a p
 # Device Control
 The device control functionality is responsible for sending commands to greenhouse devices through MQTT.
 The request is handled by the following flow:
-
+```
 HTTP Request
      |
      v
@@ -257,6 +261,7 @@ Repository        MQTT Client
      |                |
      v                v
 PostgreSQL        MQTT Broker
+```
 
 The repository is responsible for device-related database operations, while the MQTT client handles communication with the MQTT broker.
 This separation allows the business logic to coordinate both database operations and real-time device communication without coupling the repository directly to MQTT.
@@ -268,7 +273,6 @@ The main device-related models include:
 # Device Identity
 Represents the registered greenhouse device.
 Example attributes include:
-
 ```
 id
 code
@@ -281,7 +285,6 @@ in_time
 # Device Report
 Stores information reported by a device.
 Example attributes include:
-
 ```
 id
 device_id
@@ -294,7 +297,6 @@ humidity
 ```
 
 The relationship can be represented as:
-
 ```
 Device Identity
       |
@@ -315,7 +317,6 @@ Important configuration groups include:
 -> database.postgre
 
 # Example configuration values:
-
 ```
 app.host
 app.port
@@ -333,7 +334,6 @@ database.postgre.db_report_master.*
 Sensitive credentials should not be committed to the repository.
 
 # Running the Application
-
 Requirements
 
 Make sure the following software is installed:
@@ -397,13 +397,11 @@ CREATE INDEX idx_device_reports_device_id
 Make sure the configured database credentials and hosts are available before starting the application.
 
 # Running Mosquitto
-
 Make sure the MQTT broker is running on the configured host and port.
 For a local Mosquitto installation, the default MQTT port is 1883.
 
 Verify that the broker is running.
 You can also subscribe to MQTT messages using:
-
 ```
 mosquitto_sub -h localhost -p 1883 -t "greenhouse/control/#" -v
 ```
@@ -411,9 +409,7 @@ mosquitto_sub -h localhost -p 1883 -t "greenhouse/control/#" -v
 The subscriber will listen for all greenhouse device control messages.
 
 # Running the Backend
-
 Start the application using:
-
 ```
 go run main.go
 ```
@@ -429,16 +425,13 @@ The application will:
 8. Start the HTTP server
 
 # Testing MQTT Device Control
-
 Start an MQTT subscriber:
-
 ```
 mosquitto_sub -h localhost -p 1883 -t "greenhouse/control/#" -v
 ```
 
 Then send a device-control request to the backend.
 The backend will:
-
 ```
 HTTP Request
      |
@@ -462,7 +455,6 @@ MQTT Subscriber / Device
 ```
 
 # Error Handling
-
 The application provides centralized HTTP error handling.
 Errors are returned in a consistent JSON structure:
 
@@ -480,7 +472,6 @@ The application also uses recovery middleware to prevent an unexpected panic ins
 When a panic occurs, the application records the error and returns an HTTP 500 response.
 
 # Logging
-
 The application provides application logging and panic logging.
 Logs are written to the application's logs directory.
 The application also includes request-related information when running in debug mode, including:
@@ -495,7 +486,6 @@ The application also includes request-related information when running in debug 
 -> latency
 
 # Middleware
-
 The HTTP server uses several Echo middlewares, including:
 
 -> CORS
@@ -509,7 +499,6 @@ The HTTP server uses several Echo middlewares, including:
 The default request body limit is configured to 200 MB.
 
 # Design Decisions
-
 1. Layered Architecture
 The application separates HTTP handling, business logic, database access, and MQTT communication.
 This makes the code easier to maintain and allows individual components to be tested independently.
@@ -569,7 +558,6 @@ Return Result
 This keeps business rules outside the HTTP handler.
 
 # Real-Time Communication
-
 MQTT provides the real-time communication mechanism between the backend and greenhouse devices.
 Unlike a traditional request/response-only architecture:
 
@@ -582,7 +570,6 @@ Backend -> MQTT Broker -> Device
 This architecture is useful for IoT systems because devices can subscribe to topics and receive commands without the backend needing to maintain a direct connection to each physical device.
 
 # Future Improvements
-
 The current implementation can be extended with:
 -> MQTT topic subscription for incoming sensor data
 -> Sensor data ingestion through MQTT
@@ -599,7 +586,6 @@ The current implementation can be extended with:
 -> Structured observability using metrics and tracing
 
 # Project Status
-
 This project was developed as a backend engineering assignment for an IoT greenhouse system.
 The implementation focuses on:
 -> Clean backend structure
