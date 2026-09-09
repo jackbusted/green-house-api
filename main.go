@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"green-house-api/api/config/redis"
+	mqttClient "green-house-api/api/mqtt"
 	"green-house-api/helper"
 	"green-house-api/helper/cache"
 	"green-house-api/helper/jwt"
@@ -39,10 +40,11 @@ func init() {
 	config := viper.NewViper()
 
 	helper := helper.NewHelper{
-		Response:  response.ResponseHelper{},
-		Config:    config,
-		Jwt:       jwt.JwtHelper{},
-		Validator: validator.NewValidator(),
+		Response:   response.ResponseHelper{},
+		Config:     config,
+		Jwt:        jwt.JwtHelper{},
+		Validator:  validator.NewValidator(),
+		MQTTClient: &mqttClient.MqttClient{},
 	}
 	app = App{
 		config: config,
@@ -66,6 +68,26 @@ func main() {
 			logPanic(errMsg)
 		}
 	}()
+
+	brokerAddr := app.config.GetString(`broker.host`)
+	brokerPort := app.config.GetInt(`broker.port`)
+	log.Println("brokerAddr : " + brokerAddr)
+	log.Println("brokerPort :", brokerPort)
+
+	brokerUrl := "tcp://" + brokerAddr + ":" + strconv.Itoa(brokerPort)
+	brokerClientID := app.config.GetString(`app.name`)
+
+	mqtt, err := mqttClient.NewClient(brokerUrl, brokerClientID)
+	if err != nil {
+		log.Println(err.Error())
+		logPanic(err.Error())
+	}
+
+	app.helper.MQTTClient = mqtt
+
+	defer mqtt.Disconnect()
+
+	log.Println("Connected to MQTT broker")
 
 	router := router.NewRouter{
 		E:      e,

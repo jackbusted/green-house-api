@@ -1,6 +1,7 @@
 package route
 
 import (
+	mqttClient "green-house-api/api/mqtt"
 	"green-house-api/helper"
 	viperHelper "green-house-api/helper/viper"
 
@@ -13,4 +14,5 @@ type NewRoute struct {
 	DBReportMaster *gorm.DB
 	Helper         helper.NewHelper
 	Config         viperHelper.Config
+	MQTTClient     *mqttClient.MqttClient
 }

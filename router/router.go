@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	appMiddleware "green-house-api/api/middleware"
+
+	// appMiddleware "green-house-api/api/middleware"
 	"green-house-api/api/route"
 	"green-house-api/helper"
 	"green-house-api/helper/logger"
@@ -169,19 +170,23 @@ func (self *NewRouter) Register() *NewRouter {
 		DBReportMaster: connDbReportMaster,
 		Helper:         self.Helper,
 		Config:         self.Helper.Config,
+		MQTTClient:     self.Helper.MQTTClient,
 	}
 
 	group := self.E.Group("api/v1")
-	group.Use(appMiddleware.JWTWithConfig(appMiddleware.JWTConfig{
+	/* group.Use(appMiddleware.JWTWithConfig(appMiddleware.JWTConfig{
 		SigningMethod: "HS512",
 		SigningKey:    []byte(self.Helper.Config.GetString("jwt.secret")),
 		DBMaster:      self.Helper.DB.DBMaster,
-	}))
+	})) */
 
 	route.AuthRoute(group)
 
 	settingGroup := group.Group("/setting")
 	route.PersonalRoute(settingGroup)
+
+	reportGroup := group.Group("/report")
+	route.DeviceActivityRoute(reportGroup)
 
 	return self
 }
